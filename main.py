@@ -14,9 +14,28 @@ while(True):
         print('Server Stopping')
         break
 
-    # if stop server not found, continue to look for new messages
-    try:
-        # look for green dot which occurs when a new message is received
+    # check for new whatsapp message from icon
+    position = pt.locateOnScreen("wt_new_msg.png", confidence=.9)
+    if(position == None):
+        continue
+
+    # if new messages have come, click whatsapp icon and enter wt app
+    x = position[0]
+    y = position[1]
+    pt.moveTo(x+17, y+17, duration=.05)
+    pt.click()
+
+    # wait while whatsapp opens
+    sleep(0.5)
+
+    # look for green dot which occurs when a new message is received
+    position = pt.locateOnScreen("green_circle.png", confidence=.9)
+
+    new_msgs_there = (position != None)
+
+    # loop to continue looking for new messages
+    while(new_msgs_there):
+
         position = pt.locateOnScreen("green_circle.png", confidence=.9)
         x = position[0]
         y = position[1]
@@ -56,6 +75,16 @@ while(True):
         pt.moveTo(x+150, y+15, duration=.005)
         pt.click()
 
-    except:
-        # wait to receive new message
-        sleep(0.005)
+        # update new_msgs_there flag
+        position = pt.locateOnScreen("green_circle.png", confidence=.9)
+        new_msgs_there = (position != None)
+
+
+    # minimize whatsapp as there are no new messages
+    position = pt.locateOnScreen("wt_bar.png", confidence=.9)
+    x = position[0]
+    y = position[1]
+
+    # move mouse pointer over minimize icon and click it
+    pt.moveTo(x+917, y+17, duration=.05)
+    pt.click()
