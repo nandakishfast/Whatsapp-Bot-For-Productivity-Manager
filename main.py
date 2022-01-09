@@ -1,9 +1,16 @@
 import pyautogui as pt
 from time import sleep
 import pyperclip
+import os
+import pathlib
+import string
 from plyer import notification
 
 sleep(2)
+
+# get all the available user dps for identification
+path = str(pathlib.Path().resolve()) + "\\user_dps_for_identification"
+user_dp_list = os.listdir(path)
 
 while(True):
 
@@ -43,28 +50,62 @@ while(True):
         pt.moveTo(x-50, y, duration=.005)
         pt.click()
 
-        # locate smiley
-        position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+        # user identification
+        user_name = None
+        user_id = None
+
+        # open contact info
+        position = pt.locateOnScreen("options_contact.png", confidence=.99)
         x = position[0]
         y = position[1]
-
-        # move to the message
-        pt.moveTo(x+50, y-35, duration=.005)
-        # triple click on the message to select the entire message
-        pt.tripleClick()
-        # right click to get the Copy dialog, navigate and click on it
-        pt.rightClick()
-        pt.moveRel(12,15)
+        pt.moveTo(x+120, y+60, duration=.05)
         pt.click()
-        # move back to message and click again to unselect it
-        pt.moveRel(-12,-15)
+        pt.moveRel(-20, 45, duration=.05)
+        pt.click()
+        sleep(1)
+
+        # check for matching user
+        for user in user_dp_list:
+            dp_location = "user_dps_for_identification\\"+user
+            position_contact = pt.locateOnScreen(dp_location, confidence=.9)
+            if(position_contact!=None):
+                # remove .png part and numbers at end
+                # one user can have multiple dp's for identification
+                user_name = user[:-4].rstrip(string.digits)
+
+        # close contact info
+        pt.moveRel(-575, -45, duration=.05)
         pt.click()
 
-        whatsapp_msg = pyperclip.paste()
-        print("Message received:" + whatsapp_msg)
+        print(user_name)
+        if(user_name is None):
+            response_msg = 'hey this is a bot and you are not a registered user'
+
+        else:
+            # locate smiley
+            position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+            x = position[0]
+            y = position[1]
+
+            # move to the message
+            pt.moveTo(x+50, y-35, duration=.005)
+            # triple click on the message to select the entire message
+            pt.tripleClick()
+            # right click to get the Copy dialog, navigate and click on it
+            pt.rightClick()
+            pt.moveRel(12,15)
+            pt.click()
+            # move back to message and click again to unselect it
+            pt.moveRel(-12,-15)
+            pt.click()
+
+            whatsapp_msg = pyperclip.paste()
+            print("Message received:" + whatsapp_msg)
+            response_msg = 'hi '+ user_name + '\n you typed' + whatsapp_msg
+
         pt.moveTo(x+150, y+15, duration=.005)
         pt.click()
-        pt.typewrite(whatsapp_msg,interval=0.001)
+        pt.typewrite(response_msg,interval=0.001)
         pt.typewrite("\n",interval=0.001)
 
         # locate group
