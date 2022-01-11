@@ -9,8 +9,12 @@ from plyer import notification
 sleep(2)
 
 # get all the available user dps for identification
-path = str(pathlib.Path().resolve()) + "\\user_dps_for_identification"
-user_dp_list = os.listdir(path)
+path_user_dps = str(pathlib.Path().resolve()) + "\\user_dps_for_identification"
+user_dp_list = os.listdir(path_user_dps)
+
+# get all the available sticker commands
+path_sticker = str(pathlib.Path().resolve()) + "\\sticker_commands"
+stickers_list = os.listdir(path_sticker)
 
 while(True):
 
@@ -82,27 +86,51 @@ while(True):
             response_msg = 'hey this is a bot and you are not a registered user'
 
         else:
-            # locate smiley
-            position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
-            x = position[0]
-            y = position[1]
+            # check if the user send a command as a sticker
+            command = None
+            for sticker in stickers_list:
+                sticker_location = "sticker_commands\\"+sticker
+                position_sticker = pt.locateOnScreen(sticker_location, confidence=.8)
 
-            # move to the message
-            pt.moveTo(x+50, y-35, duration=.005)
-            # triple click on the message to select the entire message
-            pt.tripleClick()
-            # right click to get the Copy dialog, navigate and click on it
-            pt.rightClick()
-            pt.moveRel(12,15)
-            pt.click()
-            # move back to message and click again to unselect it
-            pt.moveRel(-12,-15)
-            pt.click()
+                if(position_sticker!=None):
+                    x_sticker = position_sticker[0]
+                    y_sticker = position_sticker[1]
 
-            whatsapp_msg = pyperclip.paste()
-            print("Message received:" + whatsapp_msg)
-            response_msg = 'hi '+ user_name + '\n you typed' + whatsapp_msg
+                    # (x,y)>(540,400) to ensure not to read previously sent sticker
+                    if(x_sticker>540 and y_sticker>400):
+                        # remove .png part at end
+                        command = sticker[:-4]
 
+            # check for text msg only if no stickers were sent
+            if(command==None):
+                # locate smiley
+                position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+                x = position[0]
+                y = position[1]
+
+                # move to the message
+                pt.moveTo(x+50, y-35, duration=.005)
+                # triple click on the message to select the entire message
+                pt.tripleClick()
+                # right click to get the Copy dialog, navigate and click on it
+                pt.rightClick()
+                pt.moveRel(12,15)
+                pt.click()
+                # move back to message and click again to unselect it
+                pt.moveRel(-12,-15)
+                pt.click()
+
+                whatsapp_msg = pyperclip.paste()
+                print("Message received:" + whatsapp_msg)
+                response_msg = 'hi '+ user_name + '\n you typed' + whatsapp_msg
+
+            else:
+                response_msg = 'hi '+ user_name + '\n you asked for ' + command
+
+        # locate smiley
+        position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+        x = position[0]
+        y = position[1]
         pt.moveTo(x+150, y+15, duration=.005)
         pt.click()
         pt.typewrite(response_msg,interval=0.001)
