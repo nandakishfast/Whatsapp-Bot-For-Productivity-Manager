@@ -7,6 +7,47 @@ import string
 from plyer import notification
 from message_process import *
 
+# send a message stating that whatsapp server is up
+# identify whatsapp icon, even if it has new msgs or not
+position = pt.locateOnScreen("wt_new_msg.png", confidence=.9)
+if(position == None):
+    position = pt.locateOnScreen("wt_no_new_msg.png", confidence=.9)
+
+# if unable to identify wt icon, stop program
+if(position == None):
+    print('Some trouble in finding wt icon, stoping server')
+    exit()
+
+# open whatsapp by clicking on whatsapp icon
+x = position[0]
+y = position[1]
+pt.moveTo(x+17, y+17, duration=.05)
+pt.click()
+
+sleep(1)
+# by default it will be inside productivity manager group
+# locate smiley and click on typing bar
+position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+x = position[0]
+y = position[1]
+pt.moveTo(x+150, y+15, duration=.005)
+pt.click()
+
+msg = 'Whatsapp server is up and running. '
+
+# type msg and send
+pt.typewrite(msg,interval=0.001)
+pt.typewrite("\n",interval=0.001)
+
+# minimize whatsapp
+position = pt.locateOnScreen("wt_bar.png", confidence=.9)
+x = position[0]
+y = position[1]
+
+# move mouse pointer over minimize icon and click it
+pt.moveTo(x+917, y+17, duration=.05)
+pt.click()
+
 sleep(2)
 
 # get all the available user dps for identification
@@ -24,6 +65,46 @@ while(True):
     # if found stop the program
     if(position != None):
         print('Server Stopping')
+        # send a message stating that whatsapp server is up
+        # identify whatsapp icon, even if it has new msgs or not
+        position = pt.locateOnScreen("wt_new_msg.png", confidence=.9)
+        if(position == None):
+            position = pt.locateOnScreen("wt_no_new_msg.png", confidence=.9)
+
+        # if unable to identify wt icon, stop program
+        if(position == None):
+            print('Some trouble in finding wt icon, stoping server')
+            exit()
+
+        # open whatsapp by clicking on whatsapp icon
+        x = position[0]
+        y = position[1]
+        pt.moveTo(x+17, y+17, duration=.05)
+        pt.click()
+
+        sleep(1)
+        # by default it will be inside productivity manager group
+        # locate smiley and click on typing bar
+        position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+        x = position[0]
+        y = position[1]
+        pt.moveTo(x+150, y+15, duration=.005)
+        pt.click()
+
+        msg = 'Whatsapp server is now stopping for maintenance. Will send an update when it is up.'
+
+        # type msg and send
+        pt.typewrite(msg,interval=0.001)
+        pt.typewrite("\n",interval=0.001)
+
+        # minimize whatsapp
+        position = pt.locateOnScreen("wt_bar.png", confidence=.9)
+        x = position[0]
+        y = position[1]
+
+        # move mouse pointer over minimize icon and click it
+        pt.moveTo(x+917, y+17, duration=.05)
+        pt.click()
         break
 
     # check for new whatsapp message from icon
