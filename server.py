@@ -45,6 +45,7 @@ while True:
     pt.moveTo(x+17, y+17, duration=.05)
     pt.click()
 
+    sleep(1)
     # by default it will be inside productivity manager group
     # locate smiley and click on typing bar
     position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
@@ -119,5 +120,5 @@ while True:
     # move mouse pointer over minimize icon and click it
     pt.moveTo(x+917, y+17, duration=.05)
     pt.click()
-    
+
     conn.close()
