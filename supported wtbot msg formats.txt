@@ -1,0 +1,45 @@
+LIST OF SUPPORTED WHATSAPP MESSAGE FORMAT APART FROM STICKER COMMANDS
+
+To indicate you completed an activity:
+	activity_id
+
+To indicate you completed an activity with repetition:
+	activity_id repetition
+
+Special format for activities with activity id less than 28:
+	(1-12) codechef tag
+	(13-24) cp link
+	25 book_id|pg1,pg2-pg3,
+	26 article link
+	27 word - meaning
+
+Get random n words/articles you read:
+	give n word/words
+	give n articlearticles
+
+Hourly report on a particular day:
+	hour YYYY-MM-DD to get hourly report
+
+Tell your weight today:
+	weight 70.0
+
+Tell your wake up today:
+	Will take the message time:
+		woke/wake
+	Specify time:
+		woke/wake HH:MM
+
+Add a new book:
+	add book book_name
+
+Add a new activity:
+	add activity category_id activity_name points
+
+Get available books:
+	books
+
+Get available activities:
+	activities
+
+Get words you learnt with range
+	word start_no end_no
