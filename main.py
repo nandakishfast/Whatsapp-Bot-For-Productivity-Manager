@@ -7,6 +7,11 @@ import string
 from plyer import notification
 from message_process import *
 
+# flag for sending automatic report to Users
+today_date = date.today()
+td = timedelta(5)
+report_last_sent = today_date - td
+
 # send a message stating that whatsapp server is up
 # identify whatsapp icon, even if it has new msgs or not
 position = pt.locateOnScreen("wt_new_msg.png", confidence=.9)
@@ -292,6 +297,46 @@ while(True):
                 pt.keyUp('ctrl')
                 sleep(3)
                 pt.press('enter')
+
+        # check if we need to send the automatic report
+        today_date = date.today()
+        td = timedelta(1)
+        yesterday = today_date - td
+        if(report_last_sent<yesterday):
+            cur.execute('SELECT user_id, user_name FROM USER')
+            users = cur.fetchall()
+
+            # locate smiley
+            position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+            x = position[0]
+            y = position[1]
+            pt.moveTo(x+150, y+15, duration=.005)
+            pt.click()
+
+            msg = "Here is the yesterday's report"
+            pt.typewrite(msg,interval=0.001)
+            pt.typewrite("\n",interval=0.001)
+
+            for us in range(len(users)):
+                user_id = users[us][0]
+                user_name = users[us][1]
+                command = None
+                wt_msg = 'hour '
+                wt_msg += yesterday.strftime("%Y-%m-%d")
+                returned = process_response(cur, conn, user_name, user_id, wt_msg, command)
+                file_location = returned[2]
+
+                # copy image to clipboard
+                image = Image.open(file_location)
+                send_to_clipboard(image)
+                # paste image and send
+                pt.keyDown('ctrl')
+                pt.press('v')
+                pt.keyUp('ctrl')
+                sleep(3)
+                pt.press('enter')
+
+            report_last_sent=yesterday
 
         # update new_msgs_there flag
         position = pt.locateOnScreen("green_circle.png", confidence=.9)
