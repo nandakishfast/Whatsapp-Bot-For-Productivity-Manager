@@ -13,6 +13,8 @@ while True:
     try:
         # try connecting to database
         conn = sqlite3.connect('productivity.sqlite')
+        conn.isolation_level = 'EXCLUSIVE'
+        conn.execute('BEGIN EXCLUSIVE')
         cur = conn.cursor()
         tosend = 'proceed'
         clt.send(bytes(tosend,"utf-8"))
@@ -61,3 +63,4 @@ while True:
             clt.send(data)
 
     clt.close()
+    conn.close()

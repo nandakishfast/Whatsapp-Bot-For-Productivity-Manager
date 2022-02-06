@@ -7,9 +7,6 @@ import string
 from plyer import notification
 from message_process import *
 
-conn = sqlite3.connect('productivity.sqlite')
-cur = conn.cursor()
-
 sleep(2)
 
 # get all the available user dps for identification
@@ -32,6 +29,16 @@ while(True):
     # check for new whatsapp message from icon
     position = pt.locateOnScreen("wt_new_msg.png", confidence=.9)
     if(position == None):
+        continue
+    try:
+        # try to connect to database with lock
+        conn = sqlite3.connect('productivity.sqlite')
+        conn.isolation_level = 'EXCLUSIVE'
+        conn.execute('BEGIN EXCLUSIVE')
+        cur = conn.cursor()
+    except:
+        # if server.py already has lock, then wait
+        wait(3)
         continue
 
     # if new messages have come, click whatsapp icon and enter wt app
@@ -218,3 +225,7 @@ while(True):
     # move mouse pointer over minimize icon and click it
     pt.moveTo(x+917, y+17, duration=.05)
     pt.click()
+
+    # close the db connection
+    conn.commit()
+    conn.close()
