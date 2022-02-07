@@ -122,9 +122,11 @@ while(True):
         conn.isolation_level = 'EXCLUSIVE'
         conn.execute('BEGIN EXCLUSIVE')
         cur = conn.cursor()
+        print('got connection')
     except:
         # if server.py already has lock, then wait
-        wait(3)
+        print('new msgs have come, tried getting db connection, but db locked.')
+        sleep(3)
         continue
 
     # if new messages have come, click whatsapp icon and enter wt app
@@ -267,6 +269,7 @@ while(True):
                 sleep(1)
                 pt.press('enter')
 
+        sleep(1)
         # locate group
         position = pt.locateOnScreen("group_icon.png", confidence=.8)
         x = position[0]

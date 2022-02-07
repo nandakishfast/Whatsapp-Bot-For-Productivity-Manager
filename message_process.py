@@ -45,7 +45,7 @@ def addActivityPointsForTheDay(cur, conn, user_id, date_, activity_points):
                 'UPDATE POINTS SET activity_points = (activity_points + ?) WHERE date_ = ? AND user_id = ?',
                 (activity_points, date_, user_id))
 
-    conn.commit()
+    #conn.commit()
 
 def addFollowUpPointsForTheDay(cur, conn, user_id, date_, follow_up_points):
     cur.execute('SELECT user_id FROM USER WHERE user_id = ?', (user_id,))
@@ -66,7 +66,7 @@ def addFollowUpPointsForTheDay(cur, conn, user_id, date_, follow_up_points):
                 'UPDATE POINTS SET follow_up_points = (follow_up_points + ?) WHERE date_ = ? AND user_id = ?',
                 (follow_up_points, date_, user_id))
 
-    conn.commit()
+    #conn.commit()
 
 def repetition_in_book(cur, conn, external_link):
     hasError = False
@@ -308,7 +308,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                         follow_up_points = int(0.5 * float(pts[0][0]) * float(rep[0][0]))
 
                         addFollowUpPointsForTheDay(cur, conn, user_id, date_, follow_up_points)
-                        conn.commit()
+                        #conn.commit()
 
                         response_msg += (str(book_id) + ' - ')
                         cur.execute('SELECT page_no FROM BOOK_READ_REGISTER WHERE activity_register = ?', (activity_register,))
@@ -320,7 +320,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                         page_str = page_str[0:len(page_str) - 1]
                         response_msg += (page_str + '\n')
                         index += 1
-            conn.commit()
+            #conn.commit()
 
         if(command == 'word_follow_up'):
             send_to = 0
@@ -384,11 +384,11 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                         follow_up_points = int(0.5 * float(pts[0][0]) * float(rep[0][0]))
 
                         addFollowUpPointsForTheDay(cur, conn, user_id, date_, follow_up_points)
-                        conn.commit()
+                        #conn.commit()
 
                         response_msg += (word + ' - ' + meaning + '\n')
                         index += 1
-            conn.commit()
+            #conn.commit()
 
         if(command == 'article_follow_up'):
             send_to = 0
@@ -451,10 +451,10 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                         follow_up_points = int(0.5 * float(pts[0][0]) * float(rep[0][0]))
 
                         addFollowUpPointsForTheDay(cur, conn, user_id, date_, follow_up_points)
-                        conn.commit()
+                        #conn.commit()
                         response_msg += (article_link + '\n')
                         index += 1
-            conn.commit()
+            #conn.commit()
 
         if(command == 'give_5_words'):
             send_to = 0
@@ -514,7 +514,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                             'INSERT INTO wake_up_time(user_id,date_,wake_up_time,pts_fetched) VALUES (?,?,?,?);',
                             (user_id, date_, f_time, pts))
                         addActivityPointsForTheDay(cur, conn, user_id, date_, pts)
-                        conn.commit()
+                        #conn.commit()
                         response_msg = 'You got ' + str(pts) + " points tday for waking up at " + str(f_time)
                         return 0, 0, file_location, response_msg
 
@@ -650,7 +650,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
             return 1, 1, file_location, response_msg
 
     elif(wt_msg!=''):
-        conn.commit()
+        #conn.commit()
         send_to = 0
         response_type = 0
         wt_msg = wt_msg.strip()
@@ -696,7 +696,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                         'INSERT INTO ACTIVITIES_DONE(activity_register,user_id,activity_id,date_time_completed,repetition) VALUES (?,?,?,?,?)',
                         (activity_register, user_id, activity_id, date_time_completed, repetition))
                     addActivityPointsForTheDay(cur, conn, user_id, date_, activity_points)
-                    conn.commit()
+                    #conn.commit()
                     response_msg = 'You got ' + str(activity_points) + ' points for '
                     cur.execute('SELECT activity_name FROM LIST_OF_ACTIVITIES WHERE activity_id = ?',(activity_id,))
                     result = cur.fetchall()
@@ -752,7 +752,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                                 cur.execute(
                                     'INSERT INTO CODECHEF(activity_register,problem_tag,status_id) VALUES (?,?,?)',
                                     (activity_register, external_link, status_id))
-                                conn.commit()
+                                #conn.commit()
                                 if(status_id == 1):
                                     response_msg = user_name + ' got ac in codechef problem tag - ' + external_link
                                     return 1, response_type, file_location, response_msg
@@ -763,7 +763,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                                 cur.execute(
                                     'INSERT INTO CP_WEBSITES(activity_register,problem_link,status_id) VALUES (?,?,?)',
                                     (activity_register, external_link, status_id))
-                                conn.commit()
+                                #conn.commit()
                                 if(status_id == 1):
                                     response_msg = user_name + ' got ac in - ' + external_link
                                     return 1, response_type, file_location, response_msg
@@ -829,7 +829,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                                     'INSERT INTO FOLLOW_UP(activity_register,date_to_be_done,next_follow_up_number_id) VALUES (?,?,?)',
                                     (activity_register, date_str, 2))
                             response_msg = response_msg[:len(response_msg)-1]
-                            conn.commit()
+                            #conn.commit()
 
                             return 1, response_type, file_location, response_msg
 
@@ -844,7 +844,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                                 'INSERT INTO FOLLOW_UP(activity_register,date_to_be_done,next_follow_up_number_id) VALUES (?,?,?)',
                                 (activity_register, date_str, 2))
                             response_msg = user_name + ' read ' + external_link
-                            conn.commit()
+                            #conn.commit()
 
                             return 1, response_type, file_location, response_msg
 
@@ -863,10 +863,10 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                                 'INSERT INTO FOLLOW_UP(activity_register,date_to_be_done,next_follow_up_number_id) VALUES (?,?,?)',
                                 (activity_register, date_str, 2))
                             response_msg = 'Congratulations on learning a new word'
-                            conn.commit()
+                            #conn.commit()
 
                             return 0, response_type, file_location, response_msg
-                conn.commit()
+                #conn.commit()
 
 
         elif(space_sep[0].lower()=='give'):
@@ -1023,7 +1023,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                 result_4 = cur.fetchall()
                 if(len(result_4)==0):
                     cur.execute('INSERT INTO WEIGHT VALUES (?,?,?)', (date_, user_id,weight))
-                    conn.commit()
+                    #conn.commit()
                     send_to = 0
                     response_type = 0
                     response_msg = 'Your weight today - ' + str(weight)
@@ -1031,7 +1031,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                 else:
                     old_weight = float(result_4[0][0])
                     cur.execute('UPDATE WEIGHT SET weight = ? WHERE date_entered = ? AND user_id = ?', (weight, date_, user_id))
-                    conn.commit()
+                    #conn.commit()
                     send_to = 0
                     response_type = 0
                     response_msg = 'Your weight today updated from ' + str(old_weight) + ' to ' + str(weight)
@@ -1096,7 +1096,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                             'INSERT INTO wake_up_time(user_id,date_,wake_up_time,pts_fetched) VALUES (?,?,?,?);',
                             (user_id, date_, f_time, pts))
                         addActivityPointsForTheDay(cur, conn, user_id, date_, pts)
-                        conn.commit()
+                        #conn.commit()
                         response_msg = 'You got ' + str(pts) + " points tday for waking up at " + str(f_time)
                         return 0, 0, file_location, response_msg
 
@@ -1142,7 +1142,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                     book_id = str(book_id)
 
                     cur.execute('INSERT INTO BOOK VALUES (?,?)',(book_id, book_name))
-                    conn.commit()
+                    #conn.commit()
 
                     response_msg = 'Use Book ID - ' + book_id
                     return 0, 0, file_location, response_msg
@@ -1172,7 +1172,7 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                     activity_id = int(result[0][0]) + 1
 
                     cur.execute('INSERT INTO LIST_OF_ACTIVITIES VALUES (?,?,?,?)',(activity_id,category_id,activity_name,points))
-                    conn.commit()
+                    #conn.commit()
 
                     response_msg = user_name + ' inserted an activity "' + activity_name
                     response_msg += '" under category ' + str(category_id) + ' with ' + str(points) + ' points for one repetition. '

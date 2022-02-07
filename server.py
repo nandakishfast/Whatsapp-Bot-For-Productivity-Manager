@@ -5,7 +5,7 @@ from time import sleep
 from message_process import *
 
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((socket.gethostname(), 47))
+s.bind(('25.10.170.84', 4444))
 print(socket.gethostname())
 s.listen(5)
 import sqlite3
@@ -60,6 +60,14 @@ while True:
     pt.typewrite(msg,interval=0.001)
     pt.typewrite("\n",interval=0.001)
 
+    # minimize whatsapp
+    position = pt.locateOnScreen("wt_bar.png", confidence=.9)
+    x = position[0]
+    y = position[1]
+    # move mouse pointer over minimize icon and click it
+    pt.moveTo(x+917, y+17, duration=.05)
+    pt.click()
+
     user_using = 'unknown'
 
     while(True):
@@ -79,7 +87,7 @@ while True:
                     user_using = string_command[len(search_query):]
 
                 cur.execute(string_command)
-                conn.commit()
+                #conn.commit()
                 result = cur.fetchall()
                 tosend = 'success'
                 clt.send(bytes(tosend,"utf-8"))
@@ -106,13 +114,38 @@ while True:
 
     clt.close()
 
+    # identify whatsapp icon, even if it has new msgs or not
+    position = pt.locateOnScreen("wt_new_msg.png", confidence=.9)
+    if(position == None):
+        position = pt.locateOnScreen("wt_no_new_msg.png", confidence=.9)
+
+    # if unable to identify wt icon, stop program
+    if(position == None):
+        print('Some trouble in finding wt icon, stoping server')
+        exit()
+
+    # open whatsapp by clicking on whatsapp icon
+    x = position[0]
+    y = position[1]
+    pt.moveTo(x+17, y+17, duration=.05)
+    pt.click()
+
+    sleep(1)
+    # by default it will be inside productivity manager group
+    # locate smiley and click on typing bar
+    position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+    x = position[0]
+    y = position[1]
+    pt.moveTo(x+150, y+15, duration=.005)
+    pt.click()
+
     msg = 'The one who used the productivity manager desktop app is ' + user_using
 
     # type msg and send
     pt.typewrite(msg,interval=0.001)
     pt.typewrite("\n",interval=0.001)
 
-    # minimize whatsapp as there are no new messages
+    # minimize whatsapp
     position = pt.locateOnScreen("wt_bar.png", confidence=.9)
     x = position[0]
     y = position[1]
@@ -120,5 +153,6 @@ while True:
     # move mouse pointer over minimize icon and click it
     pt.moveTo(x+917, y+17, duration=.05)
     pt.click()
-
+    sleep(1)
+    conn.commit()
     conn.close()
