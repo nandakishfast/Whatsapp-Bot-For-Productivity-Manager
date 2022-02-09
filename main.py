@@ -234,8 +234,8 @@ while(True):
                 pt.moveRel(12,15)
                 pt.click()
                 # move back to message and click again to unselect it
-                pt.moveRel(-12,-15)
-                pt.click()
+                #pt.moveRel(-12,-15)
+                #pt.click()
 
                 wt_msg = pyperclip.paste()
 
