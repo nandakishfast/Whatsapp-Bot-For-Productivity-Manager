@@ -229,10 +229,17 @@ while(True):
                 pt.moveTo(x+50, y-35, duration=.005)
                 # triple click on the message to select the entire message
                 pt.tripleClick()
+                # if it is an hyperlink, on triple clicking, it will prompt to open with browser
+                # press esc to close the dialog box
+                sleep(3)
+                pt.press('esc')
+                pt.keyDown('ctrl')
+                pt.press('c')
+                pt.keyUp('ctrl')
                 # right click to get the Copy dialog, navigate and click on it
-                pt.rightClick()
-                pt.moveRel(12,15)
-                pt.click()
+                #pt.rightClick()
+                #pt.moveRel(12,15)
+                #pt.click()
                 # move back to message and click again to unselect it
                 #pt.moveRel(-12,-15)
                 #pt.click()
