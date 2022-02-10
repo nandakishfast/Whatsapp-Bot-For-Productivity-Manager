@@ -184,6 +184,7 @@ while(True):
         # close contact info
         pt.moveRel(-575, -45, duration=.05)
         pt.click()
+        sleep(1.5)
 
         send_to = None # 0 - personal chat, 1 - group
         response_type = None # 0 - text, 1- image
@@ -203,48 +204,41 @@ while(True):
 
         else:
             user_id = result[0][0]
-            # check if the user send a command as a sticker
+            #check if the user send a message
+            # locate smiley
+            position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
+            x = position[0]
+            y = position[1]
+
+            # move to the message
+            pt.moveTo(x+50, y-35, duration=.005)
+            # triple click on the message to select the entire message
+            pt.tripleClick()
+            # if it is an hyperlink, on triple clicking, it will prompt to open with browser
+            # press esc to close that dialog box
+            sleep(1.5)
+            # copy the selected msg
+            pt.press('esc')
+            pt.keyDown('ctrl')
+            pt.press('c')
+            pt.keyUp('ctrl')
+
+            wt_msg = pyperclip.paste()
+            # check if the user send a command as a sticker only if no msg was sent
             command = None
-            for sticker in stickers_list:
-                sticker_location = "sticker_commands\\"+sticker
-                position_sticker = pt.locateOnScreen(sticker_location, confidence=.7)
+            if(wt_msg==''):
+                for sticker in stickers_list:
+                    sticker_location = "sticker_commands\\"+sticker
+                    position_sticker = pt.locateOnScreen(sticker_location, confidence=.7)
 
-                if(position_sticker!=None):
-                    x_sticker = position_sticker[0]
-                    y_sticker = position_sticker[1]
+                    if(position_sticker!=None):
+                        x_sticker = position_sticker[0]
+                        y_sticker = position_sticker[1]
 
-                    # (x,y)>(540,400) to ensure not to read previously sent sticker
-                    if(x_sticker>540 and y_sticker>400):
-                        # remove .png part at end
-                        command = sticker[:-4]
-
-            # check for text msg only if no stickers were sent
-            if(command==None):
-                # locate smiley
-                position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
-                x = position[0]
-                y = position[1]
-
-                # move to the message
-                pt.moveTo(x+50, y-35, duration=.005)
-                # triple click on the message to select the entire message
-                pt.tripleClick()
-                # if it is an hyperlink, on triple clicking, it will prompt to open with browser
-                # press esc to close the dialog box
-                sleep(3)
-                pt.press('esc')
-                pt.keyDown('ctrl')
-                pt.press('c')
-                pt.keyUp('ctrl')
-                # right click to get the Copy dialog, navigate and click on it
-                #pt.rightClick()
-                #pt.moveRel(12,15)
-                #pt.click()
-                # move back to message and click again to unselect it
-                #pt.moveRel(-12,-15)
-                #pt.click()
-
-                wt_msg = pyperclip.paste()
+                        # (x,y)>(540,400) to ensure not to read previously sent sticker
+                        if(x_sticker>540 and y_sticker>400):
+                            # remove .png part at end
+                            command = sticker[:-4]
 
             returned = process_response(cur, conn, user_name, user_id, wt_msg, command)
             print('Received ', returned)
