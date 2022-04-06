@@ -862,10 +862,10 @@ def process_response(cur, conn, user_name, user_id, wt_msg, command):
                             cur.execute(
                                 'INSERT INTO FOLLOW_UP(activity_register,date_to_be_done,next_follow_up_number_id) VALUES (?,?,?)',
                                 (activity_register, date_str, 2))
-                            response_msg = 'Congratulations on learning a new word'
+                            response_msg = user_name + ' : ' + word + ' - ' + meaning
                             #conn.commit()
 
-                            return 0, response_type, file_location, response_msg
+                            return 1, response_type, file_location, response_msg
                 #conn.commit()
 
 

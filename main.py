@@ -55,10 +55,6 @@ pt.click()
 
 sleep(2)
 
-# get all the available user dps for identification
-path_user_dps = str(pathlib.Path().resolve()) + "\\user_dps_for_identification"
-user_dp_list = os.listdir(path_user_dps)
-
 # get all the available sticker commands
 path_sticker = str(pathlib.Path().resolve()) + "\\sticker_commands"
 stickers_list = os.listdir(path_sticker)
@@ -155,7 +151,7 @@ while(True):
 
         sleep(1.5)
         # user identification
-        user_name = None
+
         # open contact info
         position = pt.locateOnScreen("options_contact.png", confidence=.99)
         print('options_contact :',position)
@@ -172,17 +168,23 @@ while(True):
         pt.click()
         sleep(1)
 
-        # check for matching user
-        for user in user_dp_list:
-            dp_location = "user_dps_for_identification\\"+user
-            position_contact = pt.locateOnScreen(dp_location, confidence=.9)
-            if(position_contact!=None):
-                # remove .png part and numbers at end
-                # one user can have multiple dp's for identification
-                user_name = user[:-4].rstrip(string.digits)
+        # move to position where contact is located and select it
+        pt.moveRel(-263,253)
+        pt.tripleClick()
+        pt.moveRel(0,10)
+        pt.tripleClick()
+        # copy phone number to clipboard
+        pt.keyDown('ctrl')
+        pt.press('c')
+        pt.keyUp('ctrl')
+
+        # convert +91 99524 02150 to 9952402150
+        ph_no_with_space = pyperclip.paste()
+        phn_num_sep = ph_no_with_space.split(' ')
+        ph_no = phn_num_sep[1] + phn_num_sep[2]
 
         # close contact info
-        pt.moveRel(-575, -45, duration=.05)
+        pt.moveRel(-312, -298, duration=.05)
         pt.click()
         sleep(1.5)
 
@@ -193,10 +195,10 @@ while(True):
         wt_msg = None # msg if any sent from user_id
 
         result = []
-        if(user_name is not None):
-            cur.execute('SELECT user_id FROM USER WHERE user_name = ?', (user_name,))
+        if(ph_no is not None):
+            cur.execute('SELECT user_id,user_name FROM USER WHERE phone = ?', (ph_no,))
             result = cur.fetchall()
-        if(user_name is None or len(result)==0):
+        if(ph_no is None or len(result)==0):
             # if unknown user, send the below text to them personally
             response_msg = 'hey this is a bot and you are not a registered user'
             send_to = 0
@@ -204,6 +206,7 @@ while(True):
 
         else:
             user_id = result[0][0]
+            user_name = result[0][1]
             #check if the user send a message
             # locate smiley
             position = pt.locateOnScreen("smiley_paperclip.png", confidence=.6)
@@ -258,6 +261,7 @@ while(True):
             if(response_type==0):
                 # type msg and send
                 pt.typewrite(response_msg,interval=0.001)
+                sleep(1)
                 pt.typewrite("\n",interval=0.001)
             elif(response_type==1):
                 # copy image to clipboard
@@ -270,7 +274,7 @@ while(True):
                 sleep(1)
                 pt.press('enter')
 
-        sleep(1)
+        sleep(2)
         # locate group
         position = pt.locateOnScreen("group_icon.png", confidence=.8)
         x = position[0]
@@ -278,7 +282,7 @@ while(True):
         # move to the group and click on it
         pt.moveTo(x+150, y+15, duration=.005)
         pt.click()
-
+        sleep(2)
         # if we want to send grp msg
         if(send_to==1):
             # locate smiley
@@ -290,6 +294,7 @@ while(True):
             if(response_type==0):
                 # type msg and send
                 pt.typewrite(response_msg,interval=0.001)
+                sleep(1)
                 pt.typewrite("\n",interval=0.001)
             elif(response_type==1):
                 # copy image to clipboard
