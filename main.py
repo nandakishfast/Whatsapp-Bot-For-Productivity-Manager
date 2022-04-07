@@ -168,20 +168,33 @@ while(True):
         pt.click()
         sleep(1)
 
-        # move to position where contact is located and select it
+        # move to position where phone number is located and select it
+        pyperclip.copy("")
         pt.moveRel(-263,253)
         pt.tripleClick()
-        pt.moveRel(0,10)
-        pt.tripleClick()
-        # copy phone number to clipboard
         pt.keyDown('ctrl')
         pt.press('c')
         pt.keyUp('ctrl')
 
-        # convert +91 99524 02150 to 9952402150
-        ph_no_with_space = pyperclip.paste()
-        phn_num_sep = ph_no_with_space.split(' ')
-        ph_no = phn_num_sep[1] + phn_num_sep[2]
+        # if it is a group, then there is no number
+        if(pyperclip.paste()==''):
+            ph_no = None
+        # if it is a number, then cpy phone number for identification
+        else:
+            pt.moveRel(0,10)
+            pt.tripleClick()
+            # copy phone number to clipboard
+            pt.keyDown('ctrl')
+            pt.press('c')
+            pt.keyUp('ctrl')
+
+            # convert +91 99524 02150 to 9952402150
+            # convert +91 6374 681 767 to 6374681767
+            ph_no_with_space = pyperclip.paste()
+            phn_num_sep = ph_no_with_space.split(' ')
+            ph_no = ""
+            for ph_ind in range(1,len(phn_num_sep)):
+                ph_no += phn_num_sep[ph_ind]
 
         # close contact info
         pt.moveRel(-312, -298, duration=.05)
